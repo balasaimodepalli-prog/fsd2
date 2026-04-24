@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Professional Portal</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+body { background: #fff; overflow: hidden; }
+.container { position: relative; width: 100vw; height: 100vh; display: flex; }
+.form-container { position: absolute; height: 100%; width: 50%; display: flex; align-items: center; justify-content: center; transition: .6s ease-in-out; }
+.teacher-form { left: 0; z-index: 1; }
+.student-form { left: 50%; z-index: 2; }
+.form-content { width: 100%; max-width: 360px; padding: 0 20px; }
+h2 { font-size: 32px; color: #111827; margin-bottom: 8px; }
+.subtitle { color: #6b7280; margin-bottom: 32px; font-size: 15px; }
+.toggle-group { display: flex; background: #f3f4f6; border-radius: 8px; padding: 5px; margin-bottom: 24px; }
+.toggle-btn { flex: 1; text-align: center; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #6b7280; font-size: 14px; transition: .3s; }
+.toggle-btn.active { background: #2563eb; color: #fff; }
+.input-group { margin-bottom: 20px; }
+.input-group label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #374151; }
+.input-wrapper { display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; transition: .3s; }
+.input-wrapper:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px #2563eb1a; }
+.icon { width: 20px; color: #9ca3af; margin-right: 12px; flex-shrink: 0; }
+input { border: none; outline: none; width: 100%; font-size: 15px; color: #1f2937; }
+.login-btn { width: 100%; padding: 14px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: .3s; margin-top: 8px; }
+.login-btn:hover { background: #1d4ed8; }
+.error-msg { color: #ef4444; font-size: 13px; text-align: center; margin-top: 12px; min-height: 20px; font-weight: 500; }
+.demo-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 12px; margin-top: 20px; font-size: 12px; color: #0369a1; line-height: 1.6; }
+.demo-box strong { display: block; margin-bottom: 4px; font-size: 13px; }
+.footer-text { font-size: 11px; color: #6b7280; text-align: center; margin-top: 16px; line-height: 1.5; }
+.overlay-container { position: absolute; left: 0; width: 50%; height: 100%; z-index: 100; transition: .6s ease-in-out; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; text-align: center; }
+.right-panel-active .overlay-container { transform: translateX(100%); }
+.overlay-content { max-width: 400px; padding: 0 20px; display: flex; flex-direction: column; align-items: center; }
+.logo { width: 88px; height: 88px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px; margin-bottom: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px -5px rgba(0,0,0,.3); }
+.overlay-content h1 { font-size: 32px; margin-bottom: 20px; line-height: 1.3; }
+.overlay-content p { font-size: 16px; color: #bfdbfe; line-height: 1.6; }
+@media(max-width:800px){
+  .overlay-container{display:none}
+  .form-container{width:100%;left:0;position:relative;height:auto;min-height:100vh;padding:40px 0}
+  .teacher-form{display:none}
+  .student-form,.right-panel-active .teacher-form{display:flex}
+  .right-panel-active .student-form{display:none}
+  .container{overflow-y:auto; flex-direction: column;}
+}
+</style>
+</head>
+<body>
+<div class="container" id="main">
+    
+    <!-- Teacher Form (Left Side) -->
+    <div class="form-container teacher-form">
+        <div class="form-content">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Faculty login</p>
+            
+            <div class="toggle-group">
+                <div class="toggle-btn" onclick="toggle('student')">Student</div>
+                <div class="toggle-btn active">Faculty</div>
+            </div>
+
+            <div class="input-group">
+                <label>Faculty ID</label>
+                <div class="input-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <input type="text" id="t-id" placeholder="e.g. T001">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <input type="password" id="t-pass" placeholder="••••••••••">
+                </div>
+            </div>
+
+            <button class="login-btn" onclick="login('teacher')">LOGIN</button>
+            <div class="error-msg" id="t-error"></div>
+            <div class="demo-box">
+                <strong>Demo Faculty Credentials</strong>
+                T001 / pass123 — Prof. Johnson<br>
+                T002 / pass123 — Prof. Williams
+            </div>
+            <p class="footer-text">By logging in, you agree to the University's <strong>Academic Integrity Policy</strong>.</p>
+        </div>
+    </div>
+
+    <!-- Student Form (Right Side) -->
+    <div class="form-container student-form">
+        <div class="form-content">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Student login</p>
+            
+            <div class="toggle-group">
+                <div class="toggle-btn active">Student</div>
+                <div class="toggle-btn" onclick="toggle('teacher')">Faculty</div>
+            </div>
+
+            <div class="input-group">
+                <label>Student ID</label>
+                <div class="input-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+                    <input type="text" id="s-id" placeholder="e.g. S001">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <input type="password" id="s-pass" placeholder="••••••••••">
+                </div>
+            </div>
+
+            <button class="login-btn" onclick="login('student')">LOGIN</button>
+            <div class="error-msg" id="s-error"></div>
+            <div class="demo-box">
+                <strong>Demo Student Credentials</strong>
+                S001 / pass123 — Sarah Miller<br>
+                S002 / pass123 — James Wilson<br>
+                S003 / pass123 — Emily Chen
+            </div>
+            <p class="footer-text">By logging in, you agree to the University's <strong>Academic Integrity Policy</strong>.</p>
+        </div>
+    </div>
+
+    <!-- Blue Overlay Panel -->
+    <div class="overlay-container">
+        <div class="overlay-content">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="white" width="44" height="44"><path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3ZM12 12.8L4.34 8.66L12 4.52L19.66 8.66L12 12.8ZM5 13.11V17C7.21 18.3 9.61 19 12 19C14.39 19 16.79 18.3 19 17V13.11C16.89 14.34 14.49 15 12 15C9.51 15 7.11 14.34 5 13.11Z"/></svg>
+            </div>
+            <h1>Academic Professional<br>Portal</h1>
+            <p>Secure, distraction-free environment for technical examinations and academic assessment.</p>
+        </div>
+    </div>
+</div>
+<script>
+// Demo user database
+const USERS = {
+    teachers: {
+        'T001': { password: 'pass123', name: 'Prof. Johnson' },
+        'T002': { password: 'pass123', name: 'Prof. Williams' }
+    },
+    students: {
+        'S001': { password: 'pass123', name: 'Sarah Miller' },
+        'S002': { password: 'pass123', name: 'James Wilson' },
+        'S003': { password: 'pass123', name: 'Emily Chen' }
+    }
+};
+
+// Seed some default exams if none exist
+if (!localStorage.getItem('exams')) {
+    localStorage.setItem('exams', JSON.stringify([
+        {
+            id: 'exam_1',
+            title: 'Introduction to Computer Science',
+            category: '18', categoryName: 'Science: Computers',
+            difficulty: 'medium', duration: 30, createdBy: 'T001',
+            createdByName: 'Prof. Johnson',
+            date: 'Apr 20, 2026', status: 'Published',
+            questions: [
+                { question: 'What does CPU stand for?', correct_answer: 'Central Processing Unit', incorrect_answers: ['Central Program Utility', 'Computer Personal Unit', 'Central Processor Unified'] },
+                { question: 'What does HTML stand for?', correct_answer: 'HyperText Markup Language', incorrect_answers: ['HighText Machine Language', 'HyperText and links Markup Language', 'HyperTool Multi Language'] },
+                { question: 'Which company developed JavaScript?', correct_answer: 'Netscape', incorrect_answers: ['Microsoft', 'Google', 'Apple'] },
+                { question: 'What does RAM stand for?', correct_answer: 'Random Access Memory', incorrect_answers: ['Read Access Memory', 'Run Application Memory', 'Random Application Module'] },
+                { question: 'What is the binary representation of the decimal number 10?', correct_answer: '1010', incorrect_answers: ['1001', '1100', '1110'] }
+            ]
+        },
+        {
+            id: 'exam_2',
+            title: 'General Knowledge Quiz',
+            category: '9', categoryName: 'General Knowledge',
+            difficulty: 'easy', duration: 20, createdBy: 'T002',
+            createdByName: 'Prof. Williams',
+            date: 'Apr 22, 2026', status: 'Published',
+            questions: [
+                { question: 'What is the capital of France?', correct_answer: 'Paris', incorrect_answers: ['London', 'Berlin', 'Madrid'] },
+                { question: 'Which planet is known as the Red Planet?', correct_answer: 'Mars', incorrect_answers: ['Venus', 'Jupiter', 'Saturn'] },
+                { question: 'What is the largest ocean on Earth?', correct_answer: 'Pacific Ocean', incorrect_answers: ['Atlantic Ocean', 'Indian Ocean', 'Arctic Ocean'] },
+                { question: 'Who painted the Mona Lisa?', correct_answer: 'Leonardo da Vinci', incorrect_answers: ['Michelangelo', 'Raphael', 'Vincent van Gogh'] },
+                { question: 'What is the chemical symbol for water?', correct_answer: 'H2O', incorrect_answers: ['CO2', 'NaCl', 'O2'] }
+            ]
+        }
+    ]));
+}
+
+// Seed demo results
+if (!localStorage.getItem('results')) {
+    localStorage.setItem('results', JSON.stringify([
+        {
+            examId: 'exam_1', examTitle: 'Introduction to Computer Science',
+            studentId: 'S001', studentName: 'Sarah Miller',
+            score: 4, total: 5, percentage: 80, passed: true,
+            date: 'Apr 22, 2026',
+            answers: [
+                { question: 'What does CPU stand for?', selected: 'Central Processing Unit', correct: 'Central Processing Unit', isCorrect: true },
+                { question: 'What does HTML stand for?', selected: 'HyperText Markup Language', correct: 'HyperText Markup Language', isCorrect: true },
+                { question: 'Which company developed JavaScript?', selected: 'Netscape', correct: 'Netscape', isCorrect: true },
+                { question: 'What does RAM stand for?', selected: 'Random Access Memory', correct: 'Random Access Memory', isCorrect: true },
+                { question: 'What is the binary representation of the decimal number 10?', selected: '1001', correct: '1010', isCorrect: false }
+            ],
+            feedback: ''
+        }
+    ]));
+}
+
+function toggle(type) {
+    document.getElementById('main').classList[type === 'teacher' ? 'add' : 'remove']('right-panel-active');
+}
+
+function login(role) {
+    if (role === 'teacher') {
+        const id = document.getElementById('t-id').value.trim().toUpperCase();
+        const pass = document.getElementById('t-pass').value;
+        const user = USERS.teachers[id];
+        if (user && user.password === pass) {
+            sessionStorage.setItem('user', JSON.stringify({ id, name: user.name, role: 'teacher' }));
+            window.location.href = 'teacher.html';
+        } else {
+            document.getElementById('t-error').textContent = 'Invalid Faculty ID or Password';
+        }
+    } else {
+        const id = document.getElementById('s-id').value.trim().toUpperCase();
+        const pass = document.getElementById('s-pass').value;
+        const user = USERS.students[id];
+        if (user && user.password === pass) {
+            sessionStorage.setItem('user', JSON.stringify({ id, name: user.name, role: 'student' }));
+            window.location.href = 'student.html';
+        } else {
+            document.getElementById('s-error').textContent = 'Invalid Student ID or Password';
+        }
+    }
+}
+
+// Allow Enter key to submit
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        const active = document.getElementById('main').classList.contains('right-panel-active');
+        login(active ? 'teacher' : 'student');
+    }
+});
+
+// If already logged in, redirect
+const existing = sessionStorage.getItem('user');
+if (existing) {
+    const u = JSON.parse(existing);
+    window.location.href = u.role === 'teacher' ? 'teacher.html' : 'student.html';
+}
+</script>
+</body>
+</html>

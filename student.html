@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
+body{background:#f8fafc;color:#0f172a;display:flex;height:100vh;overflow:hidden}
+.sidebar{width:260px;background:#f1f5f9;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;padding:20px 0;flex-shrink:0}
+.nav-brand{padding:0 20px 20px;font-size:20px;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:10px}
+.nav-brand .icon{background:#3b82f6;color:#fff;padding:6px;border-radius:8px;display:flex}
+.nav-brand .icon svg{width:20px;height:20px}
+.user-info{padding:0 20px 25px;font-size:14px;color:#64748b;border-bottom:1px solid #e2e8f0;margin-bottom:15px}
+.user-info strong{color:#1e293b;display:block;font-size:15px}
+.nav-menu{display:flex;flex-direction:column;gap:5px;flex:1}
+.nav-item{padding:12px 20px;margin:0 15px;border-radius:8px;color:#475569;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.2s}
+.nav-item:hover{background:#e2e8f0}
+.nav-item.active{background:#1e3a8a;color:#fff}
+.nav-item.active svg{color:#fff}
+.nav-item svg{width:18px;height:18px;color:#64748b}
+.nav-item.logout{margin-top:auto;color:#ef4444}
+.nav-item.logout svg{color:#ef4444}
+.main-content{flex:1;overflow-y:auto;padding:40px;transition:.3s}
+.view{display:none}.view.active{display:block}
+.container{max-width:1000px;margin:0 auto}
+.btn{padding:12px 20px;border-radius:8px;border:1px solid transparent;font-weight:600;cursor:pointer;transition:.2s;font-size:15px;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:#2563eb;color:#fff}.btn-primary:hover{background:#1d4ed8}
+.btn-outline{background:#fff;border-color:#cbd5e1;color:#475569}.btn-outline:hover{background:#f1f5f9}
+.btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
+.welcome-banner{background:linear-gradient(135deg,#1e3a8a,#3b82f6);border-radius:16px;padding:40px;color:#fff;margin-bottom:40px;box-shadow:0 10px 20px -5px rgba(37,99,235,.3)}
+.welcome-banner h1{font-size:28px;margin-bottom:8px}.welcome-banner p{font-size:16px;opacity:.9}
+.section{margin-bottom:40px}
+.section-title{font-size:20px;font-weight:700;margin-bottom:20px;color:#1e293b}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{background:#fff;padding:25px;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 4px 6px -1px rgba(0,0,0,.05);display:flex;flex-direction:column;transition:.2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 20px -5px rgba(0,0,0,.1)}
+.card h3{font-size:18px;margin-bottom:10px;color:#0f172a}
+.card p{color:#64748b;font-size:14px;margin-bottom:20px}
+.card .btn{margin-top:auto;width:100%;justify-content:center}
+.badge{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block}
+.badge.new{background:#dbeafe;color:#1d4ed8}.badge.done{background:#dcfce7;color:#15803d}
+/* Exam */
+.exam-topbar{background:#1e3a8a;color:#fff;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;font-weight:500}
+.exam-topbar .timer{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.exam-wrap{max-width:1100px;margin:25px auto;padding:0 20px;display:flex;gap:25px;align-items:flex-start}
+.exam-main{flex:1;background:#fff;padding:35px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.05);border:1px solid #e2e8f0}
+.q-header{font-weight:700;font-size:16px;margin-bottom:15px;color:#64748b;text-transform:uppercase;letter-spacing:1px}
+.q-text{font-size:22px;line-height:1.5;margin-bottom:30px;color:#0f172a;font-weight:500}
+.options{display:flex;flex-direction:column;gap:12px}
+.option-label{display:flex;align-items:center;gap:12px;font-size:16px;cursor:pointer;color:#334155;padding:14px 18px;border:1px solid #e2e8f0;border-radius:10px;transition:.2s;background:#f8fafc}
+.option-label:hover{background:#f1f5f9;border-color:#cbd5e1}
+.option-label.selected{background:#eff6ff;border-color:#3b82f6;color:#1e40af}
+.option-label input{display:none}
+.exam-actions{display:flex;justify-content:space-between;margin-top:40px;border-top:1px solid #e2e8f0;padding-top:25px}
+.exam-sidebar{width:280px;background:#fff;padding:20px;border-radius:16px;flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.05);border:1px solid #e2e8f0}
+.exam-sidebar h3{font-size:16px;margin-bottom:15px;color:#0f172a;border-bottom:1px solid #e2e8f0;padding-bottom:12px}
+.q-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
+.q-box{height:40px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;display:flex;justify-content:center;align-items:center;font-weight:600;cursor:pointer;color:#475569;transition:.2s;font-size:14px}
+.q-box.answered{background:#22c55e;color:#fff;border-color:#22c55e}
+.q-box.current{background:#3b82f6;color:#fff;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.3)}
+.legend{display:flex;flex-direction:column;gap:10px;font-size:13px;color:#475569}
+.legend-item{display:flex;align-items:center;gap:10px}
+.l-color{width:20px;height:20px;border-radius:5px}
+/* Result */
+.result-card{border-radius:16px;overflow:hidden;background:#fff;margin-bottom:30px;box-shadow:0 10px 25px -5px rgba(0,0,0,.1)}
+.result-title{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;text-align:center;padding:22px;font-size:22px;font-weight:700}
+.result-stats{display:flex;justify-content:space-around;align-items:center;padding:35px}
+.stat-box{text-align:center;flex:1}
+.stat-label{font-size:14px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.stat-value{font-size:48px;font-weight:800;color:#1e293b}
+.stat-value span{font-size:22px;color:#94a3b8}
+.stat-pass{padding:12px 28px;border-radius:40px;font-size:22px;font-weight:800;display:inline-block}
+.stat-pass.pass{background:#dcfce7;color:#15803d}.stat-pass.fail{background:#fee2e2;color:#dc2626}
+.divider{width:2px;height:80px;background:#e2e8f0}
+.bd-item{border:1px solid #e2e8f0;background:#fff;border-radius:12px;padding:20px;margin-bottom:15px;border-left:4px solid transparent}
+.bd-item.is-correct{border-left-color:#22c55e}.bd-item.is-wrong{border-left-color:#ef4444}
+.bd-q{font-weight:700;margin-bottom:12px;color:#1e293b;font-size:16px}
+.bd-ans{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:6px 14px;border-radius:8px;font-weight:600}
+.bd-ans.correct{background:#dcfce7;color:#15803d}.bd-ans.wrong{background:#fee2e2;color:#b91c1c}
+.bd-correct-ans{background:#f8fafc;border:1px solid #cbd5e1;color:#334155;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:600;margin-top:8px}
+.feedback-box{background:#eff6ff;padding:25px;border-radius:12px;margin-bottom:30px;border-left:4px solid #3b82f6}
+.feedback-box p{color:#1e3a8a;line-height:1.7;font-size:15px}
+.empty-state{text-align:center;padding:50px;color:#94a3b8;font-size:16px}
+.results-history .card{cursor:pointer}
+@media(max-width:900px){
+body{flex-direction:column}
+.sidebar{width:100%;height:auto;border-right:none;border-bottom:1px solid #e2e8f0;padding:10px}
+.nav-menu{flex-direction:row;overflow-x:auto}
+.nav-item{margin:0 5px;white-space:nowrap}
+.exam-wrap{flex-direction:column}.exam-sidebar{width:100%}
+.result-stats{flex-direction:column;gap:25px}.divider{display:none}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="nav-brand">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        Student Portal
+    </div>
+    <div class="user-info" id="user-info"></div>
+    <div class="nav-menu">
+        <div class="nav-item active" onclick="showView('dashboard-view',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Dashboard
+        </div>
+        <div class="nav-item" onclick="showView('my-results-view',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            My Results
+        </div>
+        <div class="nav-item logout" onclick="logout()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+        </div>
+    </div>
+</aside>
+
+<main class="main-content" id="main-content">
+
+<!-- Dashboard -->
+<div id="dashboard-view" class="view active">
+<div class="container">
+    <div class="welcome-banner">
+        <h1 id="welcome-msg">Welcome back! 👋</h1>
+        <p id="welcome-sub"></p>
+    </div>
+    <div class="section">
+        <h2 class="section-title">📝 Available Exams</h2>
+        <div class="grid" id="available-exams"></div>
+        <div class="empty-state" id="no-exams" style="display:none">No exams available right now.</div>
+    </div>
+    <div class="section results-history">
+        <h2 class="section-title">📊 Recent Results</h2>
+        <div class="grid" id="recent-results"></div>
+        <div class="empty-state" id="no-recent" style="display:none">No results yet. Take an exam to see your scores!</div>
+    </div>
+</div>
+</div>
+
+<!-- Exam View -->
+<div id="exam-view" class="view">
+    <div class="exam-topbar">
+        <div id="exam-subject">Exam</div>
+        <div class="timer" id="timer">00:00</div>
+    </div>
+    <div class="exam-wrap">
+        <div class="exam-main">
+            <div class="q-header" id="q-header"></div>
+            <div class="q-text" id="q-text"></div>
+            <div class="options" id="q-options"></div>
+            <div class="exam-actions">
+                <button class="btn btn-outline" onclick="navQ(-1)">← Previous</button>
+                <div style="display:flex;gap:12px">
+                    <button class="btn btn-primary" onclick="navQ(1)">Next →</button>
+                    <button class="btn btn-danger" onclick="submitExam()">Submit</button>
+                </div>
+            </div>
+        </div>
+        <div class="exam-sidebar">
+            <h3>Question Map</h3>
+            <div class="q-grid" id="q-grid"></div>
+            <div class="legend">
+                <div class="legend-item"><div class="l-color" style="background:#22c55e"></div>Answered</div>
+                <div class="legend-item"><div class="l-color" style="background:#3b82f6"></div>Current</div>
+                <div class="legend-item"><div class="l-color" style="background:#f8fafc;border:1px solid #cbd5e1"></div>Unanswered</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Single Result View -->
+<div id="result-view" class="view">
+    <div class="container" id="result-container"></div>
+</div>
+
+<!-- My Results List -->
+<div id="my-results-view" class="view">
+    <div class="container">
+        <h2 class="section-title" style="margin-bottom:25px">📊 All My Results</h2>
+        <div class="grid results-history" id="all-results"></div>
+        <div class="empty-state" id="no-all-results" style="display:none">No results yet.</div>
+    </div>
+</div>
+
+</main>
+
+<script>
+const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+if (!user || user.role !== 'student') window.location.href = 'index.html';
+document.getElementById('user-info').innerHTML = `<strong>${user.name}</strong>Student · ${user.id}`;
+
+function getExams() { return JSON.parse(localStorage.getItem('exams') || '[]'); }
+function getResults() { return JSON.parse(localStorage.getItem('results') || '[]'); }
+function saveResults(r) { localStorage.setItem('results', JSON.stringify(r)); }
+
+// State
+let currentExam = null, currentQ = 0, answers = [], timerInterval = null, timeLeft = 0;
+
+function showView(id, navEl) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (navEl) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); navEl.classList.add('active'); }
+    const sb = document.getElementById('sidebar'), mc = document.getElementById('main-content');
+    if (id === 'exam-view') { sb.style.display = 'none'; mc.style.padding = '0'; mc.style.background = '#f5f1e8'; }
+    else { sb.style.display = 'flex'; mc.style.padding = '40px'; mc.style.background = '#f8fafc'; }
+    if (id === 'dashboard-view') renderDashboard();
+    if (id === 'my-results-view') renderAllResults();
+}
+
+function renderDashboard() {
+    const exams = getExams();
+    const results = getResults().filter(r => r.studentId === user.id);
+    const takenIds = results.map(r => r.examId);
+    const available = exams.filter(e => !takenIds.includes(e.id));
+
+    document.getElementById('welcome-msg').textContent = `Welcome back, ${user.name.split(' ')[0]}! 👋`;
+    document.getElementById('welcome-sub').textContent = available.length ? `You have ${available.length} exam(s) available.` : 'All caught up! No pending exams.';
+
+    const ae = document.getElementById('available-exams');
+    document.getElementById('no-exams').style.display = available.length ? 'none' : 'block';
+    ae.innerHTML = available.map(e => `
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                <span class="badge new">✨ New</span>
+                <span style="font-size:13px;color:#64748b">${e.difficulty}</span>
+            </div>
+            <h3>${e.title}</h3>
+            <p>⏱ ${e.duration} min · ${e.questions.length} questions · By ${e.createdByName}</p>
+            <button class="btn btn-primary" onclick="startExam('${e.id}')">Start Exam →</button>
+        </div>
+    `).join('');
+
+    const rr = document.getElementById('recent-results');
+    document.getElementById('no-recent').style.display = results.length ? 'none' : 'block';
+    rr.innerHTML = results.slice(-4).reverse().map((r, i) => `
+        <div class="card" onclick="viewResult(${results.length - 1 - i})">
+            <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                <span class="badge done">✓ Completed</span>
+                <span style="font-size:20px;font-weight:800;color:${r.percentage >= 50 ? '#15803d' : '#dc2626'}">${r.percentage}%</span>
+            </div>
+            <h3>${r.examTitle}</h3>
+            <p>📅 ${r.date}</p>
+            <button class="btn btn-outline" style="width:100%;justify-content:center">View Result</button>
+        </div>
+    `).join('');
+}
+
+function startExam(examId) {
+    const exam = getExams().find(e => e.id === examId);
+    if (!exam) return;
+    currentExam = exam;
+    currentQ = 0;
+    answers = new Array(exam.questions.length).fill(null);
+    timeLeft = exam.duration * 60;
+    document.getElementById('exam-subject').textContent = exam.title;
+    showView('exam-view');
+    renderQuestion();
+    renderMap();
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) { clearInterval(timerInterval); submitExam(); return; }
+        const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+        document.getElementById('timer').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }, 1000);
+}
+
+function renderQuestion() {
+    const q = currentExam.questions[currentQ];
+    const opts = [...q.incorrect_answers, q.correct_answer];
+    // Shuffle deterministically per question index using a simple approach
+    if (!q._shuffled) { q._shuffled = opts.sort(() => Math.random() - 0.5); }
+    document.getElementById('q-header').textContent = `Question ${currentQ + 1} of ${currentExam.questions.length}`;
+    document.getElementById('q-text').innerHTML = q.question;
+    document.getElementById('q-options').innerHTML = q._shuffled.map((o, i) => {
+        const sel = answers[currentQ] === o ? ' selected' : '';
+        return `<label class="option-label${sel}" onclick="selectOpt(${i})">
+            <input type="radio" name="q" ${answers[currentQ] === o ? 'checked' : ''}>
+            ${String.fromCharCode(65 + i)}) ${o}
+        </label>`;
+    }).join('');
+}
+
+function selectOpt(i) {
+    answers[currentQ] = currentExam.questions[currentQ]._shuffled[i];
+    renderQuestion();
+    renderMap();
+}
+
+function navQ(dir) {
+    const next = currentQ + dir;
+    if (next >= 0 && next < currentExam.questions.length) { currentQ = next; renderQuestion(); renderMap(); }
+}
+
+function jumpQ(i) { currentQ = i; renderQuestion(); renderMap(); }
+
+function renderMap() {
+    document.getElementById('q-grid').innerHTML = currentExam.questions.map((_, i) => {
+        let cls = '';
+        if (i === currentQ) cls = 'current';
+        else if (answers[i] !== null) cls = 'answered';
+        return `<div class="q-box ${cls}" onclick="jumpQ(${i})">${i + 1}</div>`;
+    }).join('');
+}
+
+function submitExam() {
+    if (!confirm('Submit this exam?')) return;
+    clearInterval(timerInterval);
+    const qs = currentExam.questions;
+    let score = 0;
+    const answerDetails = qs.map((q, i) => {
+        const isCorrect = answers[i] === q.correct_answer;
+        if (isCorrect) score++;
+        return { question: q.question, selected: answers[i] || 'Not answered', correct: q.correct_answer, isCorrect };
+    });
+    const total = qs.length;
+    const percentage = Math.round((score / total) * 100);
+    const result = {
+        examId: currentExam.id, examTitle: currentExam.title,
+        studentId: user.id, studentName: user.name,
+        score, total, percentage, passed: percentage >= 50,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        answers: answerDetails, feedback: ''
+    };
+    const results = getResults();
+    results.push(result);
+    saveResults(results);
+    const myResults = results.filter(r => r.studentId === user.id);
+    viewResultData(result);
+}
+
+function viewResult(idx) {
+    const results = getResults().filter(r => r.studentId === user.id);
+    if (results[idx]) viewResultData(results[idx]);
+}
+
+function viewResultData(r) {
+    showView('result-view', document.querySelector('.nav-item:nth-child(2)'));
+    let html = `
+    <div class="result-card">
+        <div class="result-title">${r.examTitle}</div>
+        <div class="result-stats">
+            <div class="stat-box"><div class="stat-label">Score</div><div class="stat-value">${r.score}<span>/${r.total}</span></div></div>
+            <div class="divider"></div>
+            <div class="stat-box"><div class="stat-label">Percentage</div><div class="stat-value">${r.percentage}%</div></div>
+            <div class="divider"></div>
+            <div class="stat-box"><div class="stat-pass ${r.passed ? 'pass' : 'fail'}">${r.passed ? '✓ PASS' : '✗ FAIL'}</div></div>
+        </div>
+    </div>`;
+    if (r.feedback) {
+        html += `<div class="feedback-box"><p><strong>Instructor Feedback:</strong><br>${r.feedback}</p></div>`;
+    }
+    html += `<h2 class="section-title" style="margin-bottom:20px">Question Breakdown</h2>`;
+    r.answers.forEach((a, i) => {
+        html += `<div class="bd-item ${a.isCorrect ? 'is-correct' : 'is-wrong'}">
+            <div class="bd-q">Q${i + 1}: ${a.question}</div>
+            <div class="bd-ans ${a.isCorrect ? 'correct' : 'wrong'}">${a.isCorrect ? '✓' : '✗'} Your answer: ${a.selected}</div>
+            ${!a.isCorrect ? `<div class="bd-correct-ans">Correct: ${a.correct}</div>` : ''}
+        </div>`;
+    });
+    html += `<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:25px" onclick="showView('dashboard-view',document.querySelector('.nav-item'))">← Back to Dashboard</button>`;
+    document.getElementById('result-container').innerHTML = html;
+}
+
+function renderAllResults() {
+    const results = getResults().filter(r => r.studentId === user.id);
+    const el = document.getElementById('all-results');
+    document.getElementById('no-all-results').style.display = results.length ? 'none' : 'block';
+    el.innerHTML = results.map((r, i) => `
+        <div class="card" onclick="viewResult(${i})">
+            <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                <span class="badge done">✓ Completed</span>
+                <span style="font-size:20px;font-weight:800;color:${r.percentage >= 50 ? '#15803d' : '#dc2626'}">${r.percentage}%</span>
+            </div>
+            <h3>${r.examTitle}</h3>
+            <p>📅 ${r.date} · Score: ${r.score}/${r.total}</p>
+            <button class="btn btn-outline" style="width:100%;justify-content:center">View Details</button>
+        </div>
+    `).join('');
+}
+
+function logout() { sessionStorage.removeItem('user'); window.location.href = 'index.html'; }
+
+renderDashboard();
+</script>
+</body>
+</html>
